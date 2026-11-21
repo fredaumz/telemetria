@@ -35,3 +35,8 @@ O histórico de métricas anterior foi perdido.
 Novo roteador `cisco-la1` (origem 217.20.52.129) liberado na porta 57000; enviando os mesmos 4 sensor-paths.
 Aparece automaticamente nos dashboards (variável `router` = `label_values(ifstats_bytes_received, source)`).
 Para adicionar roteadores: IP em `firewall-routers.txt`, `sudo ./install.sh`, config em `router/<hostname>.txt`.
+
+## 2026-11-21 — retenção 30 dias
+
+Retenção do VictoriaMetrics reduzida de 90 para **30 dias** (fixa no `docker-compose.yml`, não mais no `.env`).
+O que passa de 30 dias é descartado automaticamente. Sem cópia fria por enquanto.

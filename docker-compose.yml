@@ -6,7 +6,8 @@ services:
     restart: unless-stopped
     command:
       - -storageDataPath=/storage
-      - -retentionPeriod=${RETENTION:-90d}
+      # Retenção: dados com mais de 30 dias são apagados automaticamente
+      - -retentionPeriod=30d
       - -usePromCompatibleNaming
       - -httpListenAddr=:8428
     volumes:

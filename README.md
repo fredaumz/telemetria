@@ -3,7 +3,7 @@
 Coleta de telemetria model-driven (MDT) de roteadores Cisco IOS-XR, com dashboards no Grafana.
 
 ```
-Roteador IOS-XR ──gRPC dial-out :57000──► Telegraf ──► VictoriaMetrics (:8428, só localhost, 90 dias)
+Roteador IOS-XR ──gRPC dial-out :57000──► Telegraf ──► VictoriaMetrics (:8428, só localhost, 30 dias)
                                                             │
                                               vmalert ◄─────┤ (alertas CRC / drops / telemetria parada)
                                               Grafana ◄─────┘ (:3000)

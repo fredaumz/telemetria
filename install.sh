@@ -63,7 +63,7 @@ chmod +x "$DEST"/install.sh "$DEST"/tools/*.sh "$DEST"/tools/*.py
 
 if [ ! -f "$DEST/.env" ]; then
   PASS=$(head -c 24 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 20)
-  printf 'GRAFANA_ADMIN_PASSWORD=%s\nRETENTION=90d\n' "$PASS" > "$DEST/.env"
+  printf 'GRAFANA_ADMIN_PASSWORD=%s\n' "$PASS" > "$DEST/.env"
   chmod 600 "$DEST/.env"
   echo ">> Senha do Grafana gerada em $DEST/.env"
 fi
