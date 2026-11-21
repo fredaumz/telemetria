@@ -6,6 +6,7 @@
 !    Se a source-interface ou o IP mudar, a telemetria para.
 !  - Conectado em 2026-11-21 com os mesmos 4 sensor-paths do HUDSON (interfaces, interface-briefs, CPU, memória).
 !  - source-interface Loopback0 (217.20.52.129).
+!  - Abaixo: running-config conferido no roteador em 2026-11-21 20:30 UTC.
 !
 telemetry model-driven
  destination-group TELEMETRIA
@@ -19,8 +20,8 @@ telemetry model-driven
   sensor-path Cisco-IOS-XR-nto-misc-oper:memory-summary/nodes/node/summary
  !
  sensor-group INTERFACES
-  sensor-path Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/generic-counters
   sensor-path Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-briefs/interface-brief
+  sensor-path Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/generic-counters
  !
  subscription SUB-TELEMETRIA
   sensor-group-id SISTEMA sample-interval 30000
