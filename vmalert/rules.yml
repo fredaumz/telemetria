@@ -10,21 +10,33 @@ groups:
           summary: "Erros CRC em {{ $labels.source }} {{ $labels.interface_name }}"
           description: "{{ $value }} erros CRC nos últimos 5 minutos"
 
+      # Drops: dispara só se passar de 0,01% dos pacotes da interface em 5 min
+      # (e mais de 100 drops, para não alertar interfaces com pouco tráfego).
       - alert: InterfaceInputDrops
-        expr: (ifstats_input_drops - ifstats_input_drops offset 5m) > 100
+        expr: |
+          (
+            100 * (ifstats_input_drops - ifstats_input_drops offset 5m)
+                / clamp_min(ifstats_packets_received - ifstats_packets_received offset 5m, 1)
+          ) > 0.01
+          and (ifstats_input_drops - ifstats_input_drops offset 5m) > 100
         for: 1m
         labels: {severity: warning}
         annotations:
           summary: "Drops de entrada em {{ $labels.source }} {{ $labels.interface_name }}"
-          description: "{{ $value }} pacotes descartados nos últimos 5 minutos"
+          description: "{{ printf \"%.3f\" $value }}% dos pacotes recebidos descartados nos últimos 5 minutos"
 
       - alert: InterfaceOutputDrops
-        expr: (ifstats_output_drops - ifstats_output_drops offset 5m) > 100
+        expr: |
+          (
+            100 * (ifstats_output_drops - ifstats_output_drops offset 5m)
+                / clamp_min(ifstats_packets_sent - ifstats_packets_sent offset 5m, 1)
+          ) > 0.01
+          and (ifstats_output_drops - ifstats_output_drops offset 5m) > 100
         for: 1m
         labels: {severity: warning}
         annotations:
           summary: "Drops de saída em {{ $labels.source }} {{ $labels.interface_name }}"
-          description: "{{ $value }} pacotes descartados nos últimos 5 minutos"
+          description: "{{ printf \"%.3f\" $value }}% dos pacotes enviados descartados nos últimos 5 minutos"
 
   - name: telemetria
     interval: 30s

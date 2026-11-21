@@ -44,3 +44,10 @@ O que passa de 30 dias é descartado automaticamente. Sem cópia fria por enquan
 ## 2026-11-21 — cisco-seattle
 
 Novo roteador `cisco-seattle` (origem 217.20.54.48, Loopback0) liberado na porta 57000; mesmos 4 sensor-paths.
+
+## 2026-11-21 — alertas de drops por percentual
+
+`InterfaceInputDrops`/`InterfaceOutputDrops` passaram de "mais de 100 drops em 5 min" para
+**mais de 0,01% dos pacotes da interface em 5 min (e mais de 100 drops)**. A regra antiga disparava com
+~155 drops em 1,67 Mpps na Fo0/0/0/4.801 do HUDSON (≈0,00002%), ou seja, ruído.
+Validar regras antes de aplicar: `docker run --rm -v $PWD/vmalert:/r:ro victoriametrics/vmalert:v1.106.1 -rule=/r/*.yml -dryRun`.
