@@ -47,3 +47,16 @@ groups:
         labels: {severity: critical}
         annotations:
           summary: "Sem telemetria de {{ $labels.source }} há mais de 2 minutos"
+
+      # Coleta parcial: o roteador ainda manda, mas chegaram menos de 90% das amostras esperadas
+      # (contadores de interface a cada 10 s = 30 em 5 min). offset 1m compensa o atraso dos carimbos
+      # do roteador; a 2ª condição ignora roteadores que começaram a enviar há menos de 10 min.
+      - alert: RouterTelemetryDegraded
+        expr: |
+          max by (source) (count_over_time(ifstats_bytes_received[5m] offset 1m)) < 27
+          and on(source) max by (source) (count_over_time(ifstats_bytes_received[1m] offset 10m)) > 0
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: "Coleta parcial de {{ $labels.source }}"
+          description: "Só {{ $value }} de 30 amostras esperadas nos últimos 5 minutos (perda de pacotes ou reconexões gRPC)"

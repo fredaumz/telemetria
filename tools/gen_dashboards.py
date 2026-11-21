@@ -133,6 +133,40 @@ P += [
 ]
 y += 3
 
+# --- Qualidade da coleta (todos os roteadores, independe do seletor) ---
+# Amostras esperadas: contadores de interface a cada SAMPLE_S segundos (sample-interval 10000 no roteador).
+# offset 1m: os roteadores carimbam os dados com ~20 s de atraso; sem isso o minuto corrente parece incompleto.
+SAMPLE_S = 10
+QUAL = (f'clamp_max(100 * max by (source) (count_over_time(ifstats_bytes_received[1m] offset 1m)) '
+        f'/ {60 // SAMPLE_S}, 100)')
+P.append(row("Qualidade da coleta (todos os roteadores)", y)); y += 1
+P.append(ts("Amostras recebidas (% do esperado, por minuto)", [tgt(QUAL, "{{source}}")],
+            0, y, w=16, h=7, unit="percent", fill=0, legend_calcs=("min", "mean"),
+            desc=f"Percentual das amostras de interface esperadas (1 a cada {SAMPLE_S} s) que chegaram em cada minuto. "
+                 "100% = coleta completa. Quedas simultâneas em vários roteadores indicam problema de rede perto do "
+                 "servidor; queda em um só indica problema naquele roteador ou no caminho dele. "
+                 "Gráfico defasado 1 minuto.",
+            overrides=[]))
+P[-1]["fieldConfig"]["defaults"].update({"min": 0, "max": 100})
+P[-1]["fieldConfig"]["defaults"]["custom"]["thresholdsStyle"] = {"mode": "line+area"}
+# faixa vermelha clara abaixo de 90% (mesmo limite do alerta RouterTelemetryDegraded)
+P[-1]["fieldConfig"]["defaults"]["thresholds"] = thresholds((None, "rgba(208,59,59,0.10)"), (90, "transparent"))
+P[-1]["interval"] = "1m"
+P[-1]["options"]["legend"]["sortBy"] = "Min"
+P[-1]["options"]["legend"]["sortDesc"] = False
+P.append({"id": nid(), "type": "stat", "title": "Coleta no período (média)", "datasource": DS,
+          "description": "Média do percentual de amostras recebidas no período selecionado, por roteador. "
+                         "Verde ≥ 99%, amarelo ≥ 95%, vermelho abaixo.",
+          "gridPos": {"x": 16, "y": y, "w": 8, "h": 7},
+          "fieldConfig": {"defaults": {"unit": "percent", "decimals": 1, "min": 0, "max": 100,
+                                       "color": {"mode": "thresholds"},
+                                       "thresholds": thresholds((None, CRIT), (95, WARN), (99, GOOD))}, "overrides": []},
+          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": False},
+                      "colorMode": "background", "graphMode": "none", "textMode": "value_and_name",
+                      "justifyMode": "center", "orientation": "horizontal", "wideLayout": True},
+          "targets": [tgt(f'avg_over_time(({QUAL})[$__range:1m])', "{{source}}", instant=True)]})
+y += 7
+
 P.append(row("Tráfego", y)); y += 1
 P.append(ts("Tráfego total (portas físicas)", [
     tgt(f'sum(rate(ifstats_bytes_received{{{R},{PHYS}}}[$__rate_interval])) * 8', "RX", "A"),

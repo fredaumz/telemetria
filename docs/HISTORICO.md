@@ -51,3 +51,13 @@ Novo roteador `cisco-seattle` (origem 217.20.54.48, Loopback0) liberado na porta
 **mais de 0,01% dos pacotes da interface em 5 min (e mais de 100 drops)**. A regra antiga disparava com
 ~155 drops em 1,67 Mpps na Fo0/0/0/4.801 do HUDSON (≈0,00002%), ou seja, ruído.
 Validar regras antes de aplicar: `docker run --rm -v $PWD/vmalert:/r:ro victoriametrics/vmalert:v1.106.1 -rule=/r/*.yml -dryRun`.
+
+## 2026-11-21 — qualidade da coleta
+
+Episódio entre 21:35 e 21:54 UTC: os 3 roteadores perderam amostras ao mesmo tempo e o Telegraf registrou
+reconexões gRPC (`context canceled`). Servidor sem problema (CPU, rede, conntrack ok) → provável perda de pacotes
+no caminho até 208.89.72.166. Para enxergar isso:
+- Alerta `RouterTelemetryDegraded`: < 90% das amostras esperadas (27 de 30 em 5 min), com `offset 1m`.
+- Visão Geral, linha "Qualidade da coleta": % de amostras por minuto e média do período, todos os roteadores.
+Os roteadores carimbam os dados com ~20 s de atraso: consultas de "amostras recebidas" precisam de `offset`,
+senão o minuto corrente sempre parece incompleto. Amostragem esperada fixa em 10 s (`SAMPLE_S` no gerador).
