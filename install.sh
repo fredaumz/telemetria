@@ -36,9 +36,19 @@ apt-get install -y jq bsdextrautils iptables tcpdump >/dev/null 2>&1 || apt-get 
 if [ "${SKIP_HOST:-0}" != 1 ]; then
   echo ">> Fuso UTC e NTP (a.ntp.br, b.ntp.br)"
   timedatectl set-timezone UTC
-  install -d /etc/systemd/timesyncd.conf.d
-  install -m 644 "$SRC/host/ntp-br.conf" /etc/systemd/timesyncd.conf.d/ntp-br.conf
-  systemctl restart systemd-timesyncd || true
+  if [ -d /etc/chrony/sources.d ]; then
+    # chrony (Ubuntu): só NTP.br; pools padrão desativados
+    install -m 644 "$SRC/host/ntp-br.sources" /etc/chrony/sources.d/ntp-br.sources
+    for f in /etc/chrony/sources.d/*.sources; do
+      [ "$(basename "$f")" = ntp-br.sources ] || mv "$f" "$f.disabled"
+    done
+    systemctl restart chrony || systemctl restart chronyd || true
+  else
+    # systemd-timesyncd (Debian)
+    install -d /etc/systemd/timesyncd.conf.d
+    install -m 644 "$SRC/host/ntp-br.conf" /etc/systemd/timesyncd.conf.d/ntp-br.conf
+    systemctl restart systemd-timesyncd || true
+  fi
   timedatectl set-ntp true || true
 fi
 

@@ -1,0 +1,3 @@
+# chrony (Ubuntu 24.04+): servidores NTP.br
+server a.ntp.br iburst
+server b.ntp.br iburst
