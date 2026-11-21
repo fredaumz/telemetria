@@ -2,3 +2,4 @@
 # Use o IP da interface configurada em "source-interface" na subscription do roteador.
 # Depois de editar: sudo /opt/telemetria/tools/firewall.sh
 38.104.72.131  # CISCO8200-60-HUDSON (source-interface da SUB-TELEMETRIA)
+217.20.52.129  # cisco-la1

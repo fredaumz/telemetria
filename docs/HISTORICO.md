@@ -29,3 +29,9 @@
 O servidor foi reinstalado (Ubuntu 26.04) e os arquivos se perderam, pois não havia cópia fora dele.
 O projeto foi reconstruído a partir do histórico da sessão de montagem e passou a ser versionado neste repositório.
 O histórico de métricas anterior foi perdido.
+
+## 2026-11-21 — cisco-la1
+
+Novo roteador `cisco-la1` (origem 217.20.52.129) liberado na porta 57000; enviando os mesmos 4 sensor-paths.
+Aparece automaticamente nos dashboards (variável `router` = `label_values(ifstats_bytes_received, source)`).
+Para adicionar roteadores: IP em `firewall-routers.txt`, `sudo ./install.sh`, config em `router/<hostname>.txt`.
