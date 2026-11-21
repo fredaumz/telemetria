@@ -133,40 +133,6 @@ P += [
 ]
 y += 3
 
-# --- Qualidade da coleta (todos os roteadores, independe do seletor) ---
-# Amostras esperadas: contadores de interface a cada SAMPLE_S segundos (sample-interval 10000 no roteador).
-# offset 1m: os roteadores carimbam os dados com ~20 s de atraso; sem isso o minuto corrente parece incompleto.
-SAMPLE_S = 10
-QUAL = (f'clamp_max(100 * max by (source) (count_over_time(ifstats_bytes_received[1m] offset 1m)) '
-        f'/ {60 // SAMPLE_S}, 100)')
-P.append(row("Qualidade da coleta (todos os roteadores)", y)); y += 1
-P.append(ts("Amostras recebidas (% do esperado, por minuto)", [tgt(QUAL, "{{source}}")],
-            0, y, w=16, h=7, unit="percent", fill=0, legend_calcs=("min", "mean"),
-            desc=f"Percentual das amostras de interface esperadas (1 a cada {SAMPLE_S} s) que chegaram em cada minuto. "
-                 "100% = coleta completa. Quedas simultâneas em vários roteadores indicam problema de rede perto do "
-                 "servidor; queda em um só indica problema naquele roteador ou no caminho dele. "
-                 "Gráfico defasado 1 minuto.",
-            overrides=[]))
-P[-1]["fieldConfig"]["defaults"].update({"min": 0, "max": 100})
-P[-1]["fieldConfig"]["defaults"]["custom"]["thresholdsStyle"] = {"mode": "line+area"}
-# faixa vermelha clara abaixo de 90% (mesmo limite do alerta RouterTelemetryDegraded)
-P[-1]["fieldConfig"]["defaults"]["thresholds"] = thresholds((None, "rgba(208,59,59,0.10)"), (90, "transparent"))
-P[-1]["interval"] = "1m"
-P[-1]["options"]["legend"]["sortBy"] = "Min"
-P[-1]["options"]["legend"]["sortDesc"] = False
-P.append({"id": nid(), "type": "stat", "title": "Coleta no período (média)", "datasource": DS,
-          "description": "Média do percentual de amostras recebidas no período selecionado, por roteador. "
-                         "Verde ≥ 99%, amarelo ≥ 95%, vermelho abaixo.",
-          "gridPos": {"x": 16, "y": y, "w": 8, "h": 7},
-          "fieldConfig": {"defaults": {"unit": "percent", "decimals": 1, "min": 0, "max": 100,
-                                       "color": {"mode": "thresholds"},
-                                       "thresholds": thresholds((None, CRIT), (95, WARN), (99, GOOD))}, "overrides": []},
-          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": False},
-                      "colorMode": "background", "graphMode": "none", "textMode": "value_and_name",
-                      "justifyMode": "center", "orientation": "horizontal", "wideLayout": True},
-          "targets": [tgt(f'avg_over_time(({QUAL})[$__range:1m])', "{{source}}", instant=True)]})
-y += 7
-
 P.append(row("Tráfego", y)); y += 1
 P.append(ts("Tráfego total (portas físicas)", [
     tgt(f'sum(rate(ifstats_bytes_received{{{R},{PHYS}}}[$__rate_interval])) * 8', "RX", "A"),
@@ -488,7 +454,99 @@ y += 6
 
 resources = dashboard("cisco-resources", "Cisco - CPU e Memória", P, [var_router()], ["cisco"], LINKS)
 
-for name, d in [("cisco-overview.json", overview), ("cisco-interfaces.json", detail), ("cisco-resources.json", resources)]:
+
+# =====================================================================
+# 4) Qualidade da coleta (todos os roteadores; sem seletor)
+# =====================================================================
+_id[0] = 0
+P = []
+y = 0
+# Amostras esperadas: contadores de interface a cada SAMPLE_S segundos (sample-interval 10000 no roteador).
+# offset 1m: os roteadores carimbam os dados com ~20 s de atraso; sem isso o minuto corrente parece incompleto.
+SAMPLE_S = 10
+QUAL = (f'clamp_max(100 * max by (source) (count_over_time(ifstats_bytes_received[1m] offset 1m)) '
+        f'/ {60 // SAMPLE_S}, 100)')
+SENSORS = 'ifstats_bytes_received|ifbrief_line_state|cpu_total_cpu_one_minute|mem_ram_memory'
+COLLECT_ALERTS = 'ALERTS{alertstate="firing",alertname=~"RouterTelemetry.*"}'
+
+P.append(row("Agora", y)); y += 1
+P.append({"id": nid(), "type": "stat", "title": "Último dado recebido (por roteador)", "datasource": DS,
+          "description": "Segundos desde o último dado de cada roteador. Normal: até ~30 s "
+                         "(os roteadores carimbam os dados com ~20 s de atraso). Vermelho a partir de 120 s.",
+          "gridPos": {"x": 0, "y": y, "w": 12, "h": 5},
+          "fieldConfig": {"defaults": {"unit": "s", "decimals": 0, "color": {"mode": "thresholds"},
+                                       "thresholds": thresholds((None, GOOD), (60, WARN), (120, CRIT))}, "overrides": []},
+          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": False},
+                      "colorMode": "background", "graphMode": "none", "textMode": "value_and_name",
+                      "justifyMode": "center", "orientation": "horizontal", "wideLayout": True},
+          "targets": [tgt('time() - max by (source) (timestamp(ifstats_bytes_received))', "{{source}}", instant=True)]})
+P.append({"id": nid(), "type": "stat", "title": "Coleta no período (média)", "datasource": DS,
+          "description": "Média do percentual de amostras recebidas no período selecionado, por roteador. "
+                         "Verde ≥ 99%, amarelo ≥ 95%, vermelho abaixo.",
+          "gridPos": {"x": 12, "y": y, "w": 12, "h": 5},
+          "fieldConfig": {"defaults": {"unit": "percent", "decimals": 1, "min": 0, "max": 100,
+                                       "color": {"mode": "thresholds"},
+                                       "thresholds": thresholds((None, CRIT), (95, WARN), (99, GOOD))}, "overrides": []},
+          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": False},
+                      "colorMode": "background", "graphMode": "none", "textMode": "value_and_name",
+                      "justifyMode": "center", "orientation": "horizontal", "wideLayout": True},
+          "targets": [tgt(f'avg_over_time(({QUAL})[$__range:1m])', "{{source}}", instant=True)]})
+y += 5
+
+P.append(row("Ao longo do tempo", y)); y += 1
+P.append(ts("Amostras recebidas (% do esperado, por minuto)", [tgt(QUAL, "{{source}}")],
+            0, y, w=24, h=9, unit="percent", fill=0, legend_calcs=("min", "mean"),
+            desc=f"Percentual das amostras de interface esperadas (1 a cada {SAMPLE_S} s) que chegaram em cada minuto. "
+                 "100% = coleta completa. Quedas simultâneas em vários roteadores indicam problema de rede perto do "
+                 "servidor; queda em um só indica problema naquele roteador ou no caminho dele. "
+                 "Gráfico defasado 1 minuto."))
+P[-1]["fieldConfig"]["defaults"].update({"min": 0, "max": 100})
+P[-1]["fieldConfig"]["defaults"]["custom"]["thresholdsStyle"] = {"mode": "line+area"}
+# faixa vermelha clara abaixo de 90% (mesmo limite do alerta RouterTelemetryDegraded)
+P[-1]["fieldConfig"]["defaults"]["thresholds"] = thresholds((None, "rgba(208,59,59,0.10)"), (90, "transparent"))
+P[-1]["interval"] = "1m"
+P[-1]["options"]["legend"]["sortBy"] = "Min"
+P[-1]["options"]["legend"]["sortDesc"] = False
+y += 9
+
+P.append(row("Detalhe", y)); y += 1
+P.append({"id": nid(), "type": "table", "title": "Sensor-paths por roteador (segundos desde o último dado)", "datasource": DS,
+          "description": "Um sensor-path parado enquanto os outros chegam indica problema na configuração de telemetria "
+                         "do roteador (sensor-group/subscription). Interfaces: a cada 10 s; CPU e memória: a cada 30 s.",
+          "gridPos": {"x": 0, "y": y, "w": 14, "h": 9},
+          "targets": [tgt(f'time() - max by (source, path) (timestamp({{__name__=~"{SENSORS}"}}))',
+                          instant=True, fmt="table")],
+          "transformations": [{"id": "organize", "options": {
+              "excludeByName": {"Time": True},
+              "renameByName": {"source": "Roteador", "path": "Sensor-path", "Value": "Último dado (s)"}}}],
+          "fieldConfig": {"defaults": {"unit": "s", "decimals": 0, "color": {"mode": "thresholds"},
+                                       "thresholds": thresholds((None, GOOD), (75, WARN), (120, CRIT))},
+                          "overrides": [{"matcher": {"id": "byName", "options": "Último dado (s)"},
+                                         "properties": [{"id": "custom.cellOptions", "value": {"type": "color-background"}},
+                                                        {"id": "custom.width", "value": 140}]},
+                                        {"matcher": {"id": "byName", "options": "Roteador"},
+                                         "properties": [{"id": "custom.width", "value": 190}]}]},
+          "options": {"showHeader": True, "cellHeight": "sm", "sortBy": [{"displayName": "Roteador"}]}})
+P.append({"id": nid(), "type": "table", "title": "Alertas de coleta ativos", "datasource": DS,
+          "description": "RouterTelemetryStale: roteador sem dados há mais de 2 min. "
+                         "RouterTelemetryDegraded: menos de 90% das amostras esperadas em 5 min.",
+          "gridPos": {"x": 14, "y": y, "w": 10, "h": 9},
+          "targets": [tgt(COLLECT_ALERTS, instant=True, fmt="table")],
+          "transformations": [{"id": "organize", "options": {
+              "excludeByName": {"Time": True, "Value": True, "__name__": True, "alertstate": True, "alertgroup": True},
+              "renameByName": {"alertname": "Alerta", "source": "Roteador", "severity": "Severidade"}}}],
+          "fieldConfig": {"defaults": {}, "overrides": [
+              {"matcher": {"id": "byName", "options": "Severidade"}, "properties": [
+                  {"id": "mappings", "value": [{"type": "value", "options": {
+                      "critical": {"text": "CRÍTICO", "color": CRIT}, "warning": {"text": "ATENÇÃO", "color": WARN}}}]},
+                  {"id": "custom.cellOptions", "value": {"type": "color-background"}}]}]},
+          "options": {"showHeader": True, "cellHeight": "sm", "footer": {"show": False}},
+          "noValue": "Nenhum alerta de coleta"})
+y += 9
+
+collection = dashboard("cisco-collection", "Cisco - Qualidade da Coleta", P, [], ["cisco"], LINKS)
+
+for name, d in [("cisco-overview.json", overview), ("cisco-interfaces.json", detail), ("cisco-resources.json", resources), ("cisco-collection.json", collection)]:
     with open(f"{OUT}/{name}", "w") as f:
         json.dump(d, f, ensure_ascii=False, indent=1)
 print("ok")

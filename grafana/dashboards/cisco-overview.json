@@ -847,7 +847,7 @@
   {
    "id": 14,
    "type": "row",
-   "title": "Qualidade da coleta (todos os roteadores)",
+   "title": "Tráfego",
    "collapsed": false,
    "gridPos": {
     "x": 0,
@@ -860,176 +860,6 @@
   {
    "id": 15,
    "type": "timeseries",
-   "title": "Amostras recebidas (% do esperado, por minuto)",
-   "description": "Percentual das amostras de interface esperadas (1 a cada 10 s) que chegaram em cada minuto. 100% = coleta completa. Quedas simultâneas em vários roteadores indicam problema de rede perto do servidor; queda em um só indica problema naquele roteador ou no caminho dele. Gráfico defasado 1 minuto.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "vm"
-   },
-   "gridPos": {
-    "x": 0,
-    "y": 9,
-    "w": 16,
-    "h": 7
-   },
-   "fieldConfig": {
-    "defaults": {
-     "unit": "percent",
-     "color": {
-      "mode": "palette-classic"
-     },
-     "custom": {
-      "lineWidth": 2,
-      "fillOpacity": 0,
-      "gradientMode": "opacity",
-      "showPoints": "never",
-      "drawStyle": "line",
-      "spanNulls": 60000,
-      "axisSoftMin": 0,
-      "stacking": {
-       "mode": "none"
-      },
-      "axisBorderShow": false,
-      "thresholdsStyle": {
-       "mode": "line+area"
-      }
-     },
-     "min": 0,
-     "max": 100,
-     "thresholds": {
-      "mode": "absolute",
-      "steps": [
-       {
-        "color": "rgba(208,59,59,0.10)",
-        "value": null
-       },
-       {
-        "color": "transparent",
-        "value": 90
-       }
-      ]
-     }
-    },
-    "overrides": []
-   },
-   "options": {
-    "legend": {
-     "displayMode": "table",
-     "placement": "right",
-     "calcs": [
-      "min",
-      "mean"
-     ],
-     "sortBy": "Min",
-     "sortDesc": false
-    },
-    "tooltip": {
-     "mode": "multi",
-     "sort": "desc"
-    }
-   },
-   "targets": [
-    {
-     "refId": "A",
-     "datasource": {
-      "type": "prometheus",
-      "uid": "vm"
-     },
-     "expr": "clamp_max(100 * max by (source) (count_over_time(ifstats_bytes_received[1m] offset 1m)) / 6, 100)",
-     "legendFormat": "{{source}}"
-    }
-   ],
-   "interval": "1m"
-  },
-  {
-   "id": 16,
-   "type": "stat",
-   "title": "Coleta no período (média)",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "vm"
-   },
-   "description": "Média do percentual de amostras recebidas no período selecionado, por roteador. Verde ≥ 99%, amarelo ≥ 95%, vermelho abaixo.",
-   "gridPos": {
-    "x": 16,
-    "y": 9,
-    "w": 8,
-    "h": 7
-   },
-   "fieldConfig": {
-    "defaults": {
-     "unit": "percent",
-     "decimals": 1,
-     "min": 0,
-     "max": 100,
-     "color": {
-      "mode": "thresholds"
-     },
-     "thresholds": {
-      "mode": "absolute",
-      "steps": [
-       {
-        "color": "#d03b3b",
-        "value": null
-       },
-       {
-        "color": "#fab219",
-        "value": 95
-       },
-       {
-        "color": "#0ca30c",
-        "value": 99
-       }
-      ]
-     }
-    },
-    "overrides": []
-   },
-   "options": {
-    "reduceOptions": {
-     "calcs": [
-      "lastNotNull"
-     ],
-     "fields": "",
-     "values": false
-    },
-    "colorMode": "background",
-    "graphMode": "none",
-    "textMode": "value_and_name",
-    "justifyMode": "center",
-    "orientation": "horizontal",
-    "wideLayout": true
-   },
-   "targets": [
-    {
-     "refId": "A",
-     "datasource": {
-      "type": "prometheus",
-      "uid": "vm"
-     },
-     "expr": "avg_over_time((clamp_max(100 * max by (source) (count_over_time(ifstats_bytes_received[1m] offset 1m)) / 6, 100))[$__range:1m])",
-     "legendFormat": "{{source}}",
-     "instant": true,
-     "range": false
-    }
-   ]
-  },
-  {
-   "id": 17,
-   "type": "row",
-   "title": "Tráfego",
-   "collapsed": false,
-   "gridPos": {
-    "x": 0,
-    "y": 16,
-    "w": 24,
-    "h": 1
-   },
-   "panels": []
-  },
-  {
-   "id": 18,
-   "type": "timeseries",
    "title": "Tráfego total (portas físicas)",
    "description": "",
    "datasource": {
@@ -1038,7 +868,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 17,
+    "y": 9,
     "w": 24,
     "h": 8
    },
@@ -1134,7 +964,7 @@
    ]
   },
   {
-   "id": 19,
+   "id": 16,
    "type": "bargauge",
    "title": "Top 10 interfaces — RX",
    "description": "",
@@ -1144,7 +974,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 25,
+    "y": 17,
     "w": 12,
     "h": 9
    },
@@ -1199,7 +1029,7 @@
    ]
   },
   {
-   "id": 20,
+   "id": 17,
    "type": "bargauge",
    "title": "Top 10 interfaces — TX",
    "description": "",
@@ -1209,7 +1039,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 25,
+    "y": 17,
     "w": 12,
     "h": 9
    },
@@ -1264,7 +1094,7 @@
    ]
   },
   {
-   "id": 21,
+   "id": 18,
    "type": "bargauge",
    "title": "Utilização das portas (maior entre RX e TX)",
    "description": "Percentual da capacidade da porta. Requer o sensor-path interface-briefs (bandwidth).",
@@ -1274,7 +1104,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 34,
+    "y": 26,
     "w": 24,
     "h": 6
    },
@@ -1342,20 +1172,20 @@
    ]
   },
   {
-   "id": 22,
+   "id": 19,
    "type": "row",
    "title": "Interfaces",
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 40,
+    "y": 32,
     "w": 24,
     "h": 1
    },
    "panels": []
   },
   {
-   "id": 23,
+   "id": 20,
    "type": "table",
    "title": "Todas as interfaces (clique no nome para detalhar)",
    "datasource": {
@@ -1364,7 +1194,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 41,
+    "y": 33,
     "w": 24,
     "h": 14
    },
@@ -1913,20 +1743,20 @@
    }
   },
   {
-   "id": 24,
+   "id": 21,
    "type": "row",
    "title": "Erros, drops e flaps",
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 55,
+    "y": 47,
     "w": 24,
     "h": 1
    },
    "panels": []
   },
   {
-   "id": 25,
+   "id": 22,
    "type": "timeseries",
    "title": "Erros CRC",
    "description": "",
@@ -1936,7 +1766,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 56,
+    "y": 48,
     "w": 12,
     "h": 8
    },
@@ -1991,9 +1821,139 @@
    ]
   },
   {
-   "id": 26,
+   "id": 23,
    "type": "timeseries",
    "title": "Erros de entrada",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 48,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 60,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "bars",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "sum",
+      "max"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "topk(10, sum by (interface_name) (increase_prometheus(ifstats_input_errors{source=~\"$router\"}[$__rate_interval])) > 0)",
+     "legendFormat": "{{interface_name}}"
+    }
+   ]
+  },
+  {
+   "id": 24,
+   "type": "timeseries",
+   "title": "Drops de entrada",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 56,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 60,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "bars",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "sum",
+      "max"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "topk(10, sum by (interface_name) (increase_prometheus(ifstats_input_drops{source=~\"$router\"}[$__rate_interval])) > 0)",
+     "legendFormat": "{{interface_name}}"
+    }
+   ]
+  },
+  {
+   "id": 25,
+   "type": "timeseries",
+   "title": "Drops de saída",
    "description": "",
    "datasource": {
     "type": "prometheus",
@@ -2050,143 +2010,13 @@
       "type": "prometheus",
       "uid": "vm"
      },
-     "expr": "topk(10, sum by (interface_name) (increase_prometheus(ifstats_input_errors{source=~\"$router\"}[$__rate_interval])) > 0)",
-     "legendFormat": "{{interface_name}}"
-    }
-   ]
-  },
-  {
-   "id": 27,
-   "type": "timeseries",
-   "title": "Drops de entrada",
-   "description": "",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "vm"
-   },
-   "gridPos": {
-    "x": 0,
-    "y": 64,
-    "w": 12,
-    "h": 8
-   },
-   "fieldConfig": {
-    "defaults": {
-     "unit": "short",
-     "color": {
-      "mode": "palette-classic"
-     },
-     "custom": {
-      "lineWidth": 2,
-      "fillOpacity": 60,
-      "gradientMode": "opacity",
-      "showPoints": "never",
-      "drawStyle": "bars",
-      "spanNulls": 60000,
-      "axisSoftMin": 0,
-      "stacking": {
-       "mode": "none"
-      },
-      "axisBorderShow": false
-     }
-    },
-    "overrides": []
-   },
-   "options": {
-    "legend": {
-     "displayMode": "table",
-     "placement": "right",
-     "calcs": [
-      "sum",
-      "max"
-     ],
-     "sortBy": "Max",
-     "sortDesc": true
-    },
-    "tooltip": {
-     "mode": "multi",
-     "sort": "desc"
-    }
-   },
-   "targets": [
-    {
-     "refId": "A",
-     "datasource": {
-      "type": "prometheus",
-      "uid": "vm"
-     },
-     "expr": "topk(10, sum by (interface_name) (increase_prometheus(ifstats_input_drops{source=~\"$router\"}[$__rate_interval])) > 0)",
-     "legendFormat": "{{interface_name}}"
-    }
-   ]
-  },
-  {
-   "id": 28,
-   "type": "timeseries",
-   "title": "Drops de saída",
-   "description": "",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "vm"
-   },
-   "gridPos": {
-    "x": 12,
-    "y": 64,
-    "w": 12,
-    "h": 8
-   },
-   "fieldConfig": {
-    "defaults": {
-     "unit": "short",
-     "color": {
-      "mode": "palette-classic"
-     },
-     "custom": {
-      "lineWidth": 2,
-      "fillOpacity": 60,
-      "gradientMode": "opacity",
-      "showPoints": "never",
-      "drawStyle": "bars",
-      "spanNulls": 60000,
-      "axisSoftMin": 0,
-      "stacking": {
-       "mode": "none"
-      },
-      "axisBorderShow": false
-     }
-    },
-    "overrides": []
-   },
-   "options": {
-    "legend": {
-     "displayMode": "table",
-     "placement": "right",
-     "calcs": [
-      "sum",
-      "max"
-     ],
-     "sortBy": "Max",
-     "sortDesc": true
-    },
-    "tooltip": {
-     "mode": "multi",
-     "sort": "desc"
-    }
-   },
-   "targets": [
-    {
-     "refId": "A",
-     "datasource": {
-      "type": "prometheus",
-      "uid": "vm"
-     },
      "expr": "topk(10, sum by (interface_name) (increase_prometheus(ifstats_output_drops{source=~\"$router\"}[$__rate_interval])) > 0)",
      "legendFormat": "{{interface_name}}"
     }
    ]
   },
   {
-   "id": 29,
+   "id": 26,
    "type": "timeseries",
    "title": "Flaps (carrier transitions)",
    "description": "",
@@ -2196,7 +2026,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 72,
+    "y": 64,
     "w": 12,
     "h": 8
    },
@@ -2251,7 +2081,7 @@
    ]
   },
   {
-   "id": 30,
+   "id": 27,
    "type": "table",
    "title": "Alertas ativos",
    "datasource": {
@@ -2260,7 +2090,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 72,
+    "y": 64,
     "w": 12,
     "h": 8
    },
@@ -2344,20 +2174,20 @@
    }
   },
   {
-   "id": 31,
+   "id": 28,
    "type": "row",
    "title": "Sistema (CPU e memória)",
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 80,
+    "y": 72,
     "w": 24,
     "h": 1
    },
    "panels": []
   },
   {
-   "id": 32,
+   "id": 29,
    "type": "timeseries",
    "title": "CPU total",
    "description": "",
@@ -2367,7 +2197,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 81,
+    "y": 73,
     "w": 12,
     "h": 8
    },
@@ -2488,7 +2318,7 @@
    ]
   },
   {
-   "id": 33,
+   "id": 30,
    "type": "timeseries",
    "title": "Memória",
    "description": "",
@@ -2498,7 +2328,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 81,
+    "y": 73,
     "w": 12,
     "h": 8
    },
@@ -2594,7 +2424,7 @@
    ]
   },
   {
-   "id": 34,
+   "id": 31,
    "type": "bargauge",
    "title": "Top 15 processos por CPU (5 min)",
    "description": "",
@@ -2604,7 +2434,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 89,
+    "y": 81,
     "w": 24,
     "h": 9
    },

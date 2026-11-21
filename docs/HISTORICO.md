@@ -58,6 +58,8 @@ Episódio entre 21:35 e 21:54 UTC: os 3 roteadores perderam amostras ao mesmo te
 reconexões gRPC (`context canceled`). Servidor sem problema (CPU, rede, conntrack ok) → provável perda de pacotes
 no caminho até 208.89.72.166. Para enxergar isso:
 - Alerta `RouterTelemetryDegraded`: < 90% das amostras esperadas (27 de 30 em 5 min), com `offset 1m`.
-- Visão Geral, linha "Qualidade da coleta": % de amostras por minuto e média do período, todos os roteadores.
+- Dashboard próprio "Cisco - Qualidade da Coleta" (todos os roteadores, sem seletor): último dado, % de amostras
+  por minuto, média do período, frescor de cada sensor-path e alertas de coleta. Separado da Visão Geral
+  para não misturar saúde do roteador com saúde da coleta.
 Os roteadores carimbam os dados com ~20 s de atraso: consultas de "amostras recebidas" precisam de `offset`,
 senão o minuto corrente sempre parece incompleto. Amostragem esperada fixa em 10 s (`SAMPLE_S` no gerador).

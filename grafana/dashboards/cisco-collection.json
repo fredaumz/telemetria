@@ -1,0 +1,515 @@
+{
+ "uid": "cisco-collection",
+ "title": "Cisco - Qualidade da Coleta",
+ "tags": [
+  "cisco"
+ ],
+ "timezone": "utc",
+ "schemaVersion": 39,
+ "editable": true,
+ "graphTooltip": 1,
+ "refresh": "30s",
+ "time": {
+  "from": "now-1h",
+  "to": "now"
+ },
+ "timepicker": {
+  "refresh_intervals": [
+   "10s",
+   "30s",
+   "1m",
+   "5m",
+   "15m"
+  ]
+ },
+ "templating": {
+  "list": []
+ },
+ "links": [
+  {
+   "title": "Dashboards de telemetria",
+   "type": "dashboards",
+   "tags": [
+    "cisco"
+   ],
+   "asDropdown": false,
+   "includeVars": true,
+   "keepTime": true
+  }
+ ],
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "Agora",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 2,
+   "type": "stat",
+   "title": "Último dado recebido (por roteador)",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "description": "Segundos desde o último dado de cada roteador. Normal: até ~30 s (os roteadores carimbam os dados com ~20 s de atraso). Vermelho a partir de 120 s.",
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 12,
+    "h": 5
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "decimals": 0,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "#0ca30c",
+        "value": null
+       },
+       {
+        "color": "#fab219",
+        "value": 60
+       },
+       {
+        "color": "#d03b3b",
+        "value": 120
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "value_and_name",
+    "justifyMode": "center",
+    "orientation": "horizontal",
+    "wideLayout": true
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "time() - max by (source) (timestamp(ifstats_bytes_received))",
+     "legendFormat": "{{source}}",
+     "instant": true,
+     "range": false
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "type": "stat",
+   "title": "Coleta no período (média)",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "description": "Média do percentual de amostras recebidas no período selecionado, por roteador. Verde ≥ 99%, amarelo ≥ 95%, vermelho abaixo.",
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 12,
+    "h": 5
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "decimals": 1,
+     "min": 0,
+     "max": 100,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "#d03b3b",
+        "value": null
+       },
+       {
+        "color": "#fab219",
+        "value": 95
+       },
+       {
+        "color": "#0ca30c",
+        "value": 99
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "value_and_name",
+    "justifyMode": "center",
+    "orientation": "horizontal",
+    "wideLayout": true
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "avg_over_time((clamp_max(100 * max by (source) (count_over_time(ifstats_bytes_received[1m] offset 1m)) / 6, 100))[$__range:1m])",
+     "legendFormat": "{{source}}",
+     "instant": true,
+     "range": false
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "type": "row",
+   "title": "Ao longo do tempo",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 6,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 5,
+   "type": "timeseries",
+   "title": "Amostras recebidas (% do esperado, por minuto)",
+   "description": "Percentual das amostras de interface esperadas (1 a cada 10 s) que chegaram em cada minuto. 100% = coleta completa. Quedas simultâneas em vários roteadores indicam problema de rede perto do servidor; queda em um só indica problema naquele roteador ou no caminho dele. Gráfico defasado 1 minuto.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 7,
+    "w": 24,
+    "h": 9
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "line",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false,
+      "thresholdsStyle": {
+       "mode": "line+area"
+      }
+     },
+     "min": 0,
+     "max": 100,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "rgba(208,59,59,0.10)",
+        "value": null
+       },
+       {
+        "color": "transparent",
+        "value": 90
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "min",
+      "mean"
+     ],
+     "sortBy": "Min",
+     "sortDesc": false
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "clamp_max(100 * max by (source) (count_over_time(ifstats_bytes_received[1m] offset 1m)) / 6, 100)",
+     "legendFormat": "{{source}}"
+    }
+   ],
+   "interval": "1m"
+  },
+  {
+   "id": 6,
+   "type": "row",
+   "title": "Detalhe",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 16,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 7,
+   "type": "table",
+   "title": "Sensor-paths por roteador (segundos desde o último dado)",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "description": "Um sensor-path parado enquanto os outros chegam indica problema na configuração de telemetria do roteador (sensor-group/subscription). Interfaces: a cada 10 s; CPU e memória: a cada 30 s.",
+   "gridPos": {
+    "x": 0,
+    "y": 17,
+    "w": 14,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "time() - max by (source, path) (timestamp({__name__=~\"ifstats_bytes_received|ifbrief_line_state|cpu_total_cpu_one_minute|mem_ram_memory\"}))",
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true
+      },
+      "renameByName": {
+       "source": "Roteador",
+       "path": "Sensor-path",
+       "Value": "Último dado (s)"
+      }
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "decimals": 0,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "#0ca30c",
+        "value": null
+       },
+       {
+        "color": "#fab219",
+        "value": 75
+       },
+       {
+        "color": "#d03b3b",
+        "value": 120
+       }
+      ]
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Último dado (s)"
+      },
+      "properties": [
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-background"
+        }
+       },
+       {
+        "id": "custom.width",
+        "value": 140
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Roteador"
+      },
+      "properties": [
+       {
+        "id": "custom.width",
+        "value": 190
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "sortBy": [
+     {
+      "displayName": "Roteador"
+     }
+    ]
+   }
+  },
+  {
+   "id": 8,
+   "type": "table",
+   "title": "Alertas de coleta ativos",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "description": "RouterTelemetryStale: roteador sem dados há mais de 2 min. RouterTelemetryDegraded: menos de 90% das amostras esperadas em 5 min.",
+   "gridPos": {
+    "x": 14,
+    "y": 17,
+    "w": 10,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "ALERTS{alertstate=\"firing\",alertname=~\"RouterTelemetry.*\"}",
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "Value": true,
+       "__name__": true,
+       "alertstate": true,
+       "alertgroup": true
+      },
+      "renameByName": {
+       "alertname": "Alerta",
+       "source": "Roteador",
+       "severity": "Severidade"
+      }
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Severidade"
+      },
+      "properties": [
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "critical": {
+            "text": "CRÍTICO",
+            "color": "#d03b3b"
+           },
+           "warning": {
+            "text": "ATENÇÃO",
+            "color": "#fab219"
+           }
+          }
+         }
+        ]
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-background"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "noValue": "Nenhum alerta de coleta"
+  }
+ ]
+}

@@ -21,7 +21,7 @@ Servidor atual: **208.89.72.166** (Ubuntu). Roteadores: **CISCO8200-60-HUDSON** 
 | `vmalert/rules.yml` | Regras de alerta |
 | `grafana/dashboards/*.json` | Dashboards **gerados** por `tools/gen_dashboards.py` (não editar à mão) |
 | `grafana/provisioning/` | Datasource e pasta "Telemetria" |
-| `tools/gen_dashboards.py` | Gera os 3 dashboards (Visão Geral, Interfaces, CPU e Memória) |
+| `tools/gen_dashboards.py` | Gera os 4 dashboards (Visão Geral, Interfaces, CPU e Memória, Qualidade da Coleta) |
 | `tools/check.sh` | Saúde da stack: containers, roteadores, alertas |
 | `tools/firewall.sh` | Aplica o firewall a partir das listas |
 | `firewall-allow.txt` | IPs com acesso a SSH (22), Grafana (3000) e coletor (57000) |
