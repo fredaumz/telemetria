@@ -9,7 +9,7 @@ Roteador IOS-XR ──gRPC dial-out :57000──► Telegraf ──► VictoriaM
                                               Grafana ◄─────┘ (:3000)
 ```
 
-Servidor atual: **208.89.72.166** (Ubuntu). Roteadores: **CISCO8200-60-HUDSON** (origem 38.104.72.131) e **cisco-la1** (origem 217.20.52.129).
+Servidor atual: **208.89.72.166** (Ubuntu). Roteadores: **CISCO8200-60-HUDSON** (origem 38.104.72.131), **cisco-la1** (origem 217.20.52.129) e **cisco-seattle** (origem 217.20.54.48).
 
 ## Estrutura
 

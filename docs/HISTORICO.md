@@ -40,3 +40,7 @@ Para adicionar roteadores: IP em `firewall-routers.txt`, `sudo ./install.sh`, co
 
 Retenção do VictoriaMetrics reduzida de 90 para **30 dias** (fixa no `docker-compose.yml`, não mais no `.env`).
 O que passa de 30 dias é descartado automaticamente. Sem cópia fria por enquanto.
+
+## 2026-11-21 — cisco-seattle
+
+Novo roteador `cisco-seattle` (origem 217.20.54.48, Loopback0) liberado na porta 57000; mesmos 4 sensor-paths.
