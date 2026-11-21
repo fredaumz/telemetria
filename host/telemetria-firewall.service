@@ -1,0 +1,13 @@
+[Unit]
+Description=Restricao de acesso as portas da stack de telemetria
+After=docker.service
+Requires=docker.service
+PartOf=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/opt/telemetria/tools/firewall.sh
+
+[Install]
+WantedBy=multi-user.target docker.service

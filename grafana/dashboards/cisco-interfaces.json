@@ -1,0 +1,1451 @@
+{
+ "uid": "cisco-ifaces",
+ "title": "Cisco - Interfaces",
+ "tags": [
+  "cisco"
+ ],
+ "timezone": "utc",
+ "schemaVersion": 39,
+ "editable": true,
+ "graphTooltip": 1,
+ "refresh": "30s",
+ "time": {
+  "from": "now-1h",
+  "to": "now"
+ },
+ "timepicker": {
+  "refresh_intervals": [
+   "10s",
+   "30s",
+   "1m",
+   "5m",
+   "15m"
+  ]
+ },
+ "templating": {
+  "list": [
+   {
+    "name": "router",
+    "label": "Roteador",
+    "type": "query",
+    "datasource": {
+     "type": "prometheus",
+     "uid": "vm"
+    },
+    "query": {
+     "query": "label_values(ifstats_bytes_received, source)",
+     "refId": "r"
+    },
+    "definition": "label_values(ifstats_bytes_received, source)",
+    "refresh": 2,
+    "sort": 1,
+    "multi": false,
+    "includeAll": false
+   },
+   {
+    "name": "interface",
+    "label": "Interface",
+    "type": "query",
+    "datasource": {
+     "type": "prometheus",
+     "uid": "vm"
+    },
+    "query": {
+     "query": "label_values(ifstats_bytes_received{source=~\"$router\"}, interface_name)",
+     "refId": "i"
+    },
+    "definition": "label_values(ifstats_bytes_received{source=~\"$router\"}, interface_name)",
+    "refresh": 2,
+    "sort": 1,
+    "multi": true,
+    "includeAll": true,
+    "allValue": ".*GigE[0-9/]+",
+    "current": {
+     "selected": true,
+     "text": [
+      "All"
+     ],
+     "value": [
+      "$__all"
+     ]
+    }
+   }
+  ]
+ },
+ "links": [
+  {
+   "title": "Dashboards de telemetria",
+   "type": "dashboards",
+   "tags": [
+    "cisco"
+   ],
+   "asDropdown": false,
+   "includeVars": true,
+   "keepTime": true
+  }
+ ],
+ "panels": [
+  {
+   "id": 1,
+   "type": "stat",
+   "title": "Estado",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "description": "Uma interface: estado do protocolo (UP / DOWN / ADMIN DOWN). Várias interfaces ou All: quantas estão em cada estado. DOWN não inclui as desligadas com shutdown.",
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 6,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "decimals": 0,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "#8e8d86",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Estado"
+      },
+      "properties": [
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "1": {
+            "text": "UP",
+            "color": "#0ca30c"
+           },
+           "0": {
+            "text": "DOWN",
+            "color": "#d03b3b"
+           },
+           "2": {
+            "text": "ADMIN DOWN",
+            "color": "#8e8d86"
+           },
+           "3": {
+            "text": "OUTRO",
+            "color": "#fab219"
+           }
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "UP"
+      },
+      "properties": [
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "#0ca30c",
+           "value": null
+          }
+         ]
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "DOWN"
+      },
+      "properties": [
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "#0ca30c",
+           "value": null
+          },
+          {
+           "color": "#d03b3b",
+           "value": 1
+          }
+         ]
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "ADMIN DOWN"
+      },
+      "properties": [
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "#8e8d86",
+           "value": null
+          }
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "value_and_name",
+    "justifyMode": "center",
+    "orientation": "vertical",
+    "wideLayout": true
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "max(ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"}) and on() (count(ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"}) == 1)",
+     "legendFormat": "Estado"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "(count(ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"} == 1) or vector(0)) and on() (count(ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"}) > 1)",
+     "legendFormat": "UP"
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "(count((ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"} == 0) and (ifbrief_state{source=~\"$router\",interface_name=~\"$interface\"} != 2)) or vector(0)) and on() (count(ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"}) > 1)",
+     "legendFormat": "DOWN"
+    },
+    {
+     "refId": "D",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "(count(ifbrief_state{source=~\"$router\",interface_name=~\"$interface\"} == 2) or vector(0)) and on() (count(ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"}) > 1)",
+     "legendFormat": "ADMIN DOWN"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "type": "stat",
+   "title": "Capacidade",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 6,
+    "y": 0,
+    "w": 3,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "#8e8d86",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "(sum(ifbrief_bandwidth{source=~\"$router\",interface_name=~\"$interface\"} and on(interface_name) ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"} == 1) or sum(ifbrief_bandwidth{source=~\"$router\",interface_name=~\"$interface\"})) * 1000",
+     "legendFormat": ""
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "type": "stat",
+   "title": "RX agora",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 9,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "#3987e5",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "value",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_bytes_received{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) * 8",
+     "legendFormat": ""
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "type": "stat",
+   "title": "TX agora",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 13,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "#d95926",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "value",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_bytes_sent{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) * 8",
+     "legendFormat": ""
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "type": "stat",
+   "title": "Uso máx. (RX/TX)",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 17,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "#0ca30c",
+        "value": null
+       },
+       {
+        "color": "#fab219",
+        "value": 70
+       },
+       {
+        "color": "#ec835a",
+        "value": 85
+       },
+       {
+        "color": "#d03b3b",
+        "value": 95
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "value",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "100 * 8 * max(label_replace(sum(rate(ifstats_bytes_received{source=~\"$router\",interface_name=~\"$interface\"}[5m])),\"d\",\"rx\",\"\",\"\") or label_replace(sum(rate(ifstats_bytes_sent{source=~\"$router\",interface_name=~\"$interface\"}[5m])),\"d\",\"tx\",\"\",\"\")) / ((sum(ifbrief_bandwidth{source=~\"$router\",interface_name=~\"$interface\"} and on(interface_name) ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"} == 1) or sum(ifbrief_bandwidth{source=~\"$router\",interface_name=~\"$interface\"})) * 1000)",
+     "legendFormat": ""
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "type": "stat",
+   "title": "Problemas no período",
+   "description": "Soma de erros de entrada, drops e flaps no período selecionado.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 21,
+    "y": 0,
+    "w": 3,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "#0ca30c",
+        "value": null
+       },
+       {
+        "color": "#fab219",
+        "value": 1
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(increase_prometheus(ifstats_input_errors{source=~\"$router\",interface_name=~\"$interface\"}[$__range])) + sum(increase_prometheus(ifstats_input_drops{source=~\"$router\",interface_name=~\"$interface\"}[$__range])) + sum(increase_prometheus(ifstats_output_drops{source=~\"$router\",interface_name=~\"$interface\"}[$__range])) + sum(increase_prometheus(ifstats_carrier_transitions{source=~\"$router\",interface_name=~\"$interface\"}[$__range]))",
+     "legendFormat": ""
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "type": "timeseries",
+   "title": "Tráfego total das interfaces selecionadas",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 4,
+    "w": 24,
+    "h": 9
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 12,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "line",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "RX"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "TX"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Capacidade"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#8e8d86"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Capacidade"
+      },
+      "properties": [
+       {
+        "id": "custom.fillOpacity",
+        "value": 0
+       },
+       {
+        "id": "custom.lineStyle",
+        "value": {
+         "fill": "dash",
+         "dash": [
+          8,
+          6
+         ]
+        }
+       },
+       {
+        "id": "custom.lineWidth",
+        "value": 1
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "calcs": [
+      "mean",
+      "max",
+      "lastNotNull"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_bytes_received{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) * 8",
+     "legendFormat": "RX"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_bytes_sent{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) * 8",
+     "legendFormat": "TX"
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(ifbrief_bandwidth{source=~\"$router\",interface_name=~\"$interface\"}) * 1000 and on() (count(ifbrief_line_state{source=~\"$router\",interface_name=~\"$interface\"}) == 1)",
+     "legendFormat": "Capacidade"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "type": "timeseries",
+   "title": "RX por interface (top 10 das selecionadas)",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 13,
+    "w": 12,
+    "h": 9
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "line",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "mean",
+      "max",
+      "lastNotNull"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "topk(10, sum by (interface_name) (rate(ifstats_bytes_received{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) * 8)",
+     "legendFormat": "{{interface_name}}"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "type": "timeseries",
+   "title": "TX por interface (top 10 das selecionadas)",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 13,
+    "w": 12,
+    "h": 9
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "line",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "mean",
+      "max",
+      "lastNotNull"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "topk(10, sum by (interface_name) (rate(ifstats_bytes_sent{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) * 8)",
+     "legendFormat": "{{interface_name}}"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "type": "timeseries",
+   "title": "Pacotes por segundo",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 22,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "pps",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 12,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "line",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "RX"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "TX"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "calcs": [
+      "mean",
+      "max",
+      "lastNotNull"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_packets_received{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval]))",
+     "legendFormat": "RX"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_packets_sent{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval]))",
+     "legendFormat": "TX"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "type": "timeseries",
+   "title": "Tamanho médio de pacote",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 22,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "decbytes",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "line",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "RX"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "TX"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "calcs": [
+      "mean",
+      "max",
+      "lastNotNull"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_bytes_received{source=~\"$router\",interface_name=~\"$interface\"}[5m])) / sum(rate(ifstats_packets_received{source=~\"$router\",interface_name=~\"$interface\"}[5m]))",
+     "legendFormat": "RX"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_bytes_sent{source=~\"$router\",interface_name=~\"$interface\"}[5m])) / sum(rate(ifstats_packets_sent{source=~\"$router\",interface_name=~\"$interface\"}[5m]))",
+     "legendFormat": "TX"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "type": "timeseries",
+   "title": "Erros por interface (origem)",
+   "description": "Cada barra mostra a interface e o tipo de erro. Giant = quadro maior que o MTU (normalmente MTU diferente do vizinho). Runt = quadro menor que o mínimo. CRC = corrupção física (fibra, óptico, conector).",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 30,
+    "w": 12,
+    "h": 9
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 70,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "bars",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "sum",
+      "max"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_crc_errors{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · CRC"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_input_errors{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · erro entrada"
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_output_errors{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · erro saída"
+    },
+    {
+     "refId": "D",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_giant_packets_received{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · giant (maior que MTU)"
+    },
+    {
+     "refId": "E",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_runt_packets_received{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · runt"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "type": "timeseries",
+   "title": "Drops por interface (origem)",
+   "description": "Drops de entrada acompanham erros/giants/VLAN desconhecida. Drops de saída e de fila indicam congestionamento ou QoS.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 30,
+    "w": 12,
+    "h": 9
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 70,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "bars",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "sum",
+      "max"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_input_drops{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · entrada"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_output_drops{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · saída"
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_input_queue_drops{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · fila entrada"
+    },
+    {
+     "refId": "D",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_output_queue_drops{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · fila saída"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "type": "timeseries",
+   "title": "Flaps por interface (carrier transitions)",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 39,
+    "w": 12,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 70,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "bars",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "sum"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum by (interface_name) (increase_prometheus(ifstats_carrier_transitions{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval])) > 0",
+     "legendFormat": "{{interface_name}} · flap"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "type": "timeseries",
+   "title": "Broadcast / Multicast (pps)",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "vm"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 39,
+    "w": 12,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "pps",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "drawStyle": "line",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "axisBorderShow": false
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Broadcast RX"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#6250d6"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Multicast RX"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#1baf7a"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "calcs": [
+      "mean",
+      "max",
+      "lastNotNull"
+     ],
+     "sortBy": "Max",
+     "sortDesc": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_broadcast_packets_received{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval]))",
+     "legendFormat": "Broadcast RX"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "vm"
+     },
+     "expr": "sum(rate(ifstats_multicast_packets_received{source=~\"$router\",interface_name=~\"$interface\"}[$__rate_interval]))",
+     "legendFormat": "Multicast RX"
+    }
+   ]
+  }
+ ]
+}

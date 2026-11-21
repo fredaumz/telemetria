@@ -1,0 +1,8 @@
+# IPs/redes com acesso às portas 22 (SSH), 3000 (Grafana) e 57000 (coletor). Um por linha.
+# CUIDADO: remover o IP de onde você acessa o SSH bloqueia seu acesso.
+# Depois de editar: sudo /opt/telemetria/tools/firewall.sh
+187.17.174.7
+186.232.1.1
+23.145.72.0/24
+208.89.72.0/24
+208.89.73.0/24

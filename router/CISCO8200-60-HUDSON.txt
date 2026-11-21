@@ -1,0 +1,42 @@
+! CISCO8200-60-HUDSON — Cisco 8201-32FH, IOS-XR 7.8.2
+! Configuração de telemetria model-driven (dial-out gRPC) para o coletor 208.89.72.166:57000
+!
+! IMPORTANTE
+!  - A telemetria sai com origem 38.104.72.131. Esse IP é o único liberado na porta 57000
+!    (firewall-routers.txt). Se a source-interface ou o IP mudar, a telemetria para.
+!  - <INTERFACE-38.104.72.131> = interface que tem o 38.104.72.131 (preencher).
+!  - 201.76.196.9 (Bundle-Ether6.3274, PNI) NÃO serve como origem: a rota para a VM sai
+!    pela Bundle-Ether5.200 e os pacotes não chegavam.
+!
+telemetry model-driven
+ destination-group TELEMETRIA
+  address-family ipv4 208.89.72.166 port 57000
+   encoding self-describing-gpb
+   protocol grpc no-tls
+  !
+ !
+ sensor-group SISTEMA
+  sensor-path Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization
+  sensor-path Cisco-IOS-XR-nto-misc-oper:memory-summary/nodes/node/summary
+ !
+ sensor-group INTERFACES
+  sensor-path Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/generic-counters
+  sensor-path Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-briefs/interface-brief
+ !
+ subscription SUB-TELEMETRIA
+  sensor-group-id SISTEMA sample-interval 30000
+  sensor-group-id INTERFACES sample-interval 10000
+  destination-id TELEMETRIA
+  source-interface <INTERFACE-38.104.72.131>
+ !
+!
+! NTP (mesmos servidores da VM; no IOS-XR usar IP)
+ntp
+ server 200.160.0.8 prefer
+ server 200.189.40.8
+ source <INTERFACE-38.104.72.131>
+!
+! Verificação:
+!   show telemetry model-driven destination TELEMETRIA      (State: Active)
+!   show telemetry model-driven subscription SUB-TELEMETRIA internal
+!   show ntp associations

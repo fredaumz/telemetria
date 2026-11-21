@@ -1,0 +1,78 @@
+name: telemetria
+
+services:
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.106.1
+    restart: unless-stopped
+    command:
+      - -storageDataPath=/storage
+      - -retentionPeriod=${RETENTION:-90d}
+      - -usePromCompatibleNaming
+      - -httpListenAddr=:8428
+    volumes:
+      - vmdata:/storage
+    ports:
+      # API sem autenticação: exposta só localmente. Para acesso remoto use túnel SSH.
+      - "127.0.0.1:8428:8428"
+
+  telegraf:
+    image: telegraf:1.32
+    restart: unless-stopped
+    depends_on: [victoriametrics]
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    ports:
+      - "57000:57000"   # gRPC dial-out dos roteadores Cisco (MDT)
+
+  vmalert:
+    image: victoriametrics/vmalert:v1.106.1
+    restart: unless-stopped
+    depends_on: [victoriametrics]
+    command:
+      - -datasource.url=http://victoriametrics:8428
+      - -remoteWrite.url=http://victoriametrics:8428
+      - -remoteRead.url=http://victoriametrics:8428
+      - -rule=/etc/vmalert/*.yml
+      - -notifier.blackhole
+      - -evaluationInterval=30s
+    volumes:
+      - ./vmalert:/etc/vmalert:ro
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    restart: unless-stopped
+    depends_on: [victoriametrics]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?defina no .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_DATE_FORMATS_DEFAULT_TIMEZONE: UTC
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+
+  # ---- Simuladores (apenas com --profile sim) ----
+  xr-sim:
+    profiles: [sim]
+    build: ./sim/xr-sim
+    depends_on: [telegraf]
+    environment:
+      TARGET: telegraf:57000
+      ROUTERS: "sim-router-1,sim-router-2,sim-router-3"
+      INTERVAL: "10"
+
+  server-sim:
+    profiles: [sim]
+    image: telegraf:1.32
+    hostname: srv-simulado
+    depends_on: [victoriametrics]
+    volumes:
+      - ./sim/server-sim/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+
+volumes:
+  vmdata:
+  grafanadata:

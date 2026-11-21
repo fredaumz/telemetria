@@ -1,0 +1,37 @@
+groups:
+  - name: interfaces
+    interval: 30s
+    rules:
+      - alert: InterfaceCRCErrors
+        expr: (ifstats_crc_errors - ifstats_crc_errors offset 5m) > 0
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "Erros CRC em {{ $labels.source }} {{ $labels.interface_name }}"
+          description: "{{ $value }} erros CRC nos últimos 5 minutos"
+
+      - alert: InterfaceInputDrops
+        expr: (ifstats_input_drops - ifstats_input_drops offset 5m) > 100
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "Drops de entrada em {{ $labels.source }} {{ $labels.interface_name }}"
+          description: "{{ $value }} pacotes descartados nos últimos 5 minutos"
+
+      - alert: InterfaceOutputDrops
+        expr: (ifstats_output_drops - ifstats_output_drops offset 5m) > 100
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "Drops de saída em {{ $labels.source }} {{ $labels.interface_name }}"
+          description: "{{ $value }} pacotes descartados nos últimos 5 minutos"
+
+  - name: telemetria
+    interval: 30s
+    rules:
+      - alert: RouterTelemetryStale
+        expr: (time() - max by (source) (timestamp(ifstats_bytes_received))) > 120
+        for: 2m
+        labels: {severity: critical}
+        annotations:
+          summary: "Sem telemetria de {{ $labels.source }} há mais de 2 minutos"

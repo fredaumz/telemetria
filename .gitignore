@@ -1,0 +1,8 @@
+# Segredos (senha do Grafana) — nunca versionar
+.env
+*.env
+# Lixo local
+__pycache__/
+*.pyc
+*.pcap
+backups/
