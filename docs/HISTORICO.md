@@ -63,3 +63,7 @@ no caminho até 208.89.72.166. Para enxergar isso:
   para não misturar saúde do roteador com saúde da coleta.
 Os roteadores carimbam os dados com ~20 s de atraso: consultas de "amostras recebidas" precisam de `offset`,
 senão o minuto corrente sempre parece incompleto. Amostragem esperada fixa em 10 s (`SAMPLE_S` no gerador).
+
+## 2026-11-23 — lista só para o Grafana
+
+Nova lista `firewall-grafana.txt` (só porta 3000, sem SSH e sem coletor). Primeiro IP: 45.170.21.218.

@@ -26,6 +26,7 @@ Servidor atual: **208.89.72.166** (Ubuntu). Roteadores: **CISCO8200-60-HUDSON** 
 | `tools/firewall.sh` | Aplica o firewall a partir das listas |
 | `firewall-allow.txt` | IPs com acesso a SSH (22), Grafana (3000) e coletor (57000) |
 | `firewall-routers.txt` | IPs dos roteadores — só porta 57000 |
+| `firewall-grafana.txt` | IPs com acesso só ao Grafana (3000) |
 | `host/` | Serviço systemd do firewall e config de NTP |
 | `router/` | Configuração aplicada em cada roteador |
 | `sim/` | Simulador de roteador e servidor para testes |
@@ -61,7 +62,7 @@ sudo ./install.sh
 git add -A && git commit -m "..." && git push
 ```
 
-Só mudar o firewall: editar `firewall-allow.txt` / `firewall-routers.txt`, `sudo ./install.sh`
+Só mudar o firewall: editar `firewall-allow.txt` / `firewall-routers.txt` / `firewall-grafana.txt`, `sudo ./install.sh`
 (ou copiar para `/opt/telemetria/` e rodar `sudo /opt/telemetria/tools/firewall.sh`).
 
 ## Teste com dados simulados

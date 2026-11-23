@@ -24,6 +24,14 @@ if [ -f "$ROUTERS" ]; then
     iptables -A DOCKER-USER -i "$IFACE" -p tcp --dport "$COLLECTOR_PORT" -s "$net" -j RETURN
   done
 fi
+# Acesso somente ao Grafana (sem SSH e sem coletor)
+GRAFANA="$DIR/firewall-grafana.txt"
+GRAFANA_PORT="${FW_GRAFANA_PORT:-3000}"
+if [ -f "$GRAFANA" ]; then
+  lista "$GRAFANA" | while read -r net; do
+    iptables -A DOCKER-USER -i "$IFACE" -p tcp --dport "$GRAFANA_PORT" -s "$net" -j RETURN
+  done
+fi
 iptables -A DOCKER-USER -i "$IFACE" -p tcp -m multiport --dports "$PORTS" -j DROP
 iptables -A DOCKER-USER -j RETURN
 

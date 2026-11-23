@@ -1,0 +1,3 @@
+# IPs/redes com acesso SOMENTE ao Grafana (porta 3000). Sem SSH e sem coletor.
+# Depois de editar: sudo /opt/telemetria/tools/firewall.sh
+45.170.21.218
