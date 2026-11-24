@@ -4,9 +4,8 @@
 ! IMPORTANTE
 !  - A telemetria chega com origem 217.20.54.48, liberado só na porta 57000 (firewall-routers.txt).
 !    Se a source-interface ou o IP mudar, a telemetria para.
-!  - Conectado em 2026-11-21 com os mesmos 4 sensor-paths do HUDSON (interfaces, interface-briefs, CPU, memória).
 !  - source-interface Loopback0 (217.20.54.48).
-!  - NÃO CONFERIDO: copiado do cisco-la1; falta o running-config deste roteador.
+!  - Abaixo: running-config enviado em 2026-11-24 18:42 UTC.
 !
 telemetry model-driven
  destination-group TELEMETRIA
