@@ -67,3 +67,11 @@ senão o minuto corrente sempre parece incompleto. Amostragem esperada fixa em 1
 ## 2026-11-23 — lista só para o Grafana
 
 Nova lista `firewall-grafana.txt` (só porta 3000, sem SSH e sem coletor). Primeiro IP: 45.170.21.218.
+
+## 2026-11-24 — três roteadores novos
+
+`cisco8200-ashburn` (208.89.75.48), `cisco-ashburn2` (208.89.75.129) e `cisco.ord.ch4` (217.20.50.48) liberados na 57000.
+IP x hostname confirmado pelo conteúdo dos pacotes (telemetria sem TLS). Config de cada um em `router/` ainda pendente
+(falta o `show running-config telemetry model-driven`).
+
+HUDSON: 15 quedas gRPC entre 23/11 17:49 e 24/11 11:14 UTC (1-2 min sem dados cada), só nele; causa em investigação.
