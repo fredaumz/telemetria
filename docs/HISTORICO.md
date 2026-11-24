@@ -94,4 +94,4 @@ foram 19 quedas; na de 13:25 os dados pararam (13:23:55) mais de 1 min antes do 
 ## 2026-11-24 — cisco8200-ams, cisco.ld7 e cisco.fra.corix
 
 `cisco8200-ams` (195.219.89.9), `cisco.ld7` (217.20.56.48) e `cisco.fra.corix` (217.20.55.48) liberados na 57000;
-hostname de cada IP confirmado no pacote. Running-config de ld7 e fra.corix gravados; o do ams veio parcial (conferir).
+hostname de cada IP confirmado no pacote. Running-config dos três gravado (ams usa Bundle-Ether2; os outros, Loopback0).

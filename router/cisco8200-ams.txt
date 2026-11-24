@@ -4,8 +4,8 @@
 ! IMPORTANTE
 !  - A telemetria chega com origem 195.219.89.9, liberado só na porta 57000 (firewall-routers.txt).
 !    Se a source-interface ou o IP mudar, a telemetria para.
-!  - PARCIAL: o trecho enviado em 2026-11-24 não tinha hostname nem a source-interface (provavelmente cortado).
-!    Atribuído ao cisco8200-ams por ser o primeiro dos três; CONFERIR.
+!  - source-interface Bundle-Ether2 (195.219.89.9).
+!  - Abaixo: running-config enviado em 2026-11-24 21:59 UTC.
 !
 telemetry model-driven
  destination-group TELEMETRIA
@@ -26,7 +26,7 @@ telemetry model-driven
   sensor-group-id SISTEMA sample-interval 30000
   sensor-group-id INTERFACES sample-interval 10000
   destination-id TELEMETRIA
-  ! source-interface <CONFERIR>
+  source-interface Bundle-Ether2
  !
 !
 ! Verificação:
