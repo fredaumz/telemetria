@@ -5,6 +5,7 @@
 !  - A telemetria sai com origem 38.104.72.131. Esse IP é o único liberado na porta 57000
 !    (firewall-routers.txt). Se a source-interface ou o IP mudar, a telemetria para.
 !  - source-interface FourHundredGigE0/0/0/4.801 (38.104.72.131).
+!  - Bloco de telemetria conferido com o running-config enviado em 2026-11-24 18:42 UTC.
 !  - 201.76.196.9 (Bundle-Ether6.3274, PNI) NÃO serve como origem: a rota para a VM sai
 !    pela Bundle-Ether5.200 e os pacotes não chegavam.
 !
@@ -20,8 +21,8 @@ telemetry model-driven
   sensor-path Cisco-IOS-XR-nto-misc-oper:memory-summary/nodes/node/summary
  !
  sensor-group INTERFACES
-  sensor-path Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/generic-counters
   sensor-path Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-briefs/interface-brief
+  sensor-path Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/generic-counters
  !
  subscription SUB-TELEMETRIA
   sensor-group-id SISTEMA sample-interval 30000
@@ -30,7 +31,7 @@ telemetry model-driven
   source-interface FourHundredGigE0/0/0/4.801
  !
 !
-! NTP (mesmos servidores da VM; no IOS-XR usar IP)
+! NTP (sugerido, NÃO conferido no roteador; mesmos servidores da VM, no IOS-XR usar IP)
 ntp
  server 200.160.0.8 prefer
  server 200.189.40.8
