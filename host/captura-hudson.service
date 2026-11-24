@@ -1,0 +1,18 @@
+# Captura TEMPORÁRIA para investigar quedas do HUDSON. Não é instalada pelo install.sh nem sobe no boot.
+# Instalar/ligar:  sudo install -m 644 host/captura-hudson.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl start captura-hudson
+# Desligar e apagar: sudo systemctl stop captura-hudson; sudo rm -rf /var/log/telemetria-captura
+# Teto de disco: 15 arquivos de 20 MB (300 MB), sobrescritos em anel. Só os 90 primeiros bytes de cada pacote.
+[Unit]
+Description=Captura temporaria (cabecalhos) do HUDSON na porta 57000
+After=network.target
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/install -d -o tcpdump -g tcpdump -m 750 /var/log/telemetria-captura
+ExecStart=/usr/bin/tcpdump -i ens18 -nn -s 90 -C 20 -W 15 -w /var/log/telemetria-captura/hudson.pcap 'host 38.104.72.131 and (tcp port 57000 or icmp)'
+Nice=19
+IOSchedulingClass=idle
+CPUQuota=10%
+MemoryMax=64M
+RuntimeMaxSec=7d
+Restart=no

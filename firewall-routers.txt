@@ -8,3 +8,4 @@
 208.89.75.129  # cisco-ashburn2 (Bundle-Ether999)
 217.20.50.48  # cisco.ord.ch4 (Loopback0)
 217.20.51.48  # cisco-dallas (Loopback0)
+66.110.76.183  # cisco-mia (Bundle-Ether1)

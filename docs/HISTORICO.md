@@ -82,3 +82,11 @@ HUDSON: 15 quedas gRPC entre 23/11 17:49 e 24/11 11:14 UTC (1-2 min sem dados ca
 
 Configs em `router/` gravadas a partir do running-config: cisco8200-ashburn, cisco-ashburn2 (origem Bundle-Ether999),
 cisco.ord.ch4, cisco-dallas, cisco-seattle e CISCO8200-60-HUDSON.
+
+## 2026-11-24 — cisco-mia e captura do HUDSON
+
+`cisco-mia` (66.110.76.183, origem Bundle-Ether1) liberado na 57000; hostname confirmado no pacote e running-config gravado.
+
+Captura temporária (só cabeçalhos, máx. 300 MB, para sozinha em 7 dias) ligada em 2026-11-24 18:56 UTC para pegar a
+próxima queda do HUDSON: `host/captura-hudson.service`, arquivos em /var/log/telemetria-captura. Até 13:25 UTC de 24/11
+foram 19 quedas; na de 13:25 os dados pararam (13:23:55) mais de 1 min antes do encerramento da conexão (13:25:08).

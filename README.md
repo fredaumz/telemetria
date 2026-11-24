@@ -11,7 +11,7 @@ Roteador IOS-XR ──gRPC dial-out :57000──► Telegraf ──► VictoriaM
 
 Servidor atual: **208.89.72.166** (Ubuntu). Roteadores (origem da telemetria): **CISCO8200-60-HUDSON** (38.104.72.131),
 **cisco-la1** (217.20.52.129), **cisco-seattle** (217.20.54.48), **cisco8200-ashburn** (208.89.75.48),
-**cisco-ashburn2** (208.89.75.129), **cisco.ord.ch4** (217.20.50.48), **cisco-dallas** (217.20.51.48).
+**cisco-ashburn2** (208.89.75.129), **cisco.ord.ch4** (217.20.50.48), **cisco-dallas** (217.20.51.48), **cisco-mia** (66.110.76.183).
 
 ## Estrutura
 
@@ -29,7 +29,7 @@ Servidor atual: **208.89.72.166** (Ubuntu). Roteadores (origem da telemetria): *
 | `firewall-allow.txt` | IPs com acesso a SSH (22), Grafana (3000) e coletor (57000) |
 | `firewall-routers.txt` | IPs dos roteadores — só porta 57000 |
 | `firewall-grafana.txt` | IPs com acesso só ao Grafana (3000) |
-| `host/` | Serviço systemd do firewall e config de NTP |
+| `host/` | Serviço systemd do firewall, config de NTP e captura temporária do HUDSON (`captura-hudson.service`, não sobe no boot) |
 | `router/` | Configuração aplicada em cada roteador |
 | `sim/` | Simulador de roteador e servidor para testes |
 | `docs/HISTORICO.md` | Decisões e problemas já resolvidos |
