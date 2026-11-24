@@ -90,3 +90,8 @@ cisco.ord.ch4, cisco-dallas, cisco-seattle e CISCO8200-60-HUDSON.
 Captura temporária (só cabeçalhos, máx. 300 MB, para sozinha em 7 dias) ligada em 2026-11-24 18:56 UTC para pegar a
 próxima queda do HUDSON: `host/captura-hudson.service`, arquivos em /var/log/telemetria-captura. Até 13:25 UTC de 24/11
 foram 19 quedas; na de 13:25 os dados pararam (13:23:55) mais de 1 min antes do encerramento da conexão (13:25:08).
+
+## 2026-11-24 — cisco8200-ams, cisco.ld7 e cisco.fra.corix
+
+`cisco8200-ams` (195.219.89.9), `cisco.ld7` (217.20.56.48) e `cisco.fra.corix` (217.20.55.48) liberados na 57000;
+hostname de cada IP confirmado no pacote. Running-config de ld7 e fra.corix gravados; o do ams veio parcial (conferir).

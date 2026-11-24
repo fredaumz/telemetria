@@ -9,3 +9,6 @@
 217.20.50.48  # cisco.ord.ch4 (Loopback0)
 217.20.51.48  # cisco-dallas (Loopback0)
 66.110.76.183  # cisco-mia (Bundle-Ether1)
+195.219.89.9  # cisco8200-ams
+217.20.55.48  # cisco.fra.corix (Loopback0)
+217.20.56.48  # cisco.ld7 (Loopback0)
