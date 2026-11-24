@@ -11,7 +11,7 @@ Roteador IOS-XR ──gRPC dial-out :57000──► Telegraf ──► VictoriaM
 
 Servidor atual: **208.89.72.166** (Ubuntu). Roteadores (origem da telemetria): **CISCO8200-60-HUDSON** (38.104.72.131),
 **cisco-la1** (217.20.52.129), **cisco-seattle** (217.20.54.48), **cisco8200-ashburn** (208.89.75.48),
-**cisco-ashburn2** (208.89.75.129), **cisco.ord.ch4** (217.20.50.48).
+**cisco-ashburn2** (208.89.75.129), **cisco.ord.ch4** (217.20.50.48), **cisco-dallas** (217.20.51.48).
 
 ## Estrutura
 

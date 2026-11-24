@@ -75,3 +75,7 @@ IP x hostname confirmado pelo conteúdo dos pacotes (telemetria sem TLS). Config
 (falta o `show running-config telemetry model-driven`).
 
 HUDSON: 15 quedas gRPC entre 23/11 17:49 e 24/11 11:14 UTC (1-2 min sem dados cada), só nele; causa em investigação.
+
+## 2026-11-24 — cisco-dallas
+
+`cisco-dallas` (217.20.51.48) liberado na 57000; IP x hostname confirmado no pacote. Config em `router/` pendente.

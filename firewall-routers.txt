@@ -7,3 +7,4 @@
 208.89.75.48  # cisco8200-ashburn
 208.89.75.129  # cisco-ashburn2
 217.20.50.48  # cisco.ord.ch4
+217.20.51.48  # cisco-dallas
