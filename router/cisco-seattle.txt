@@ -6,6 +6,7 @@
 !    Se a source-interface ou o IP mudar, a telemetria para.
 !  - Conectado em 2026-11-21 com os mesmos 4 sensor-paths do HUDSON (interfaces, interface-briefs, CPU, memória).
 !  - source-interface Loopback0 (217.20.54.48).
+!  - NÃO CONFERIDO: copiado do cisco-la1; falta o running-config deste roteador.
 !
 telemetry model-driven
  destination-group TELEMETRIA

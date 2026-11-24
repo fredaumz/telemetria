@@ -79,3 +79,6 @@ HUDSON: 15 quedas gRPC entre 23/11 17:49 e 24/11 11:14 UTC (1-2 min sem dados ca
 ## 2026-11-24 — cisco-dallas
 
 `cisco-dallas` (217.20.51.48) liberado na 57000; IP x hostname confirmado no pacote. Config em `router/` pendente.
+
+Configs em `router/` gravadas a partir do running-config: cisco8200-ashburn, cisco-ashburn2 (origem Bundle-Ether999),
+cisco.ord.ch4 e cisco-dallas. Falta conferir: cisco-seattle.
